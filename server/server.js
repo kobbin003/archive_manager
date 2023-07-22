@@ -69,5 +69,13 @@ app.get("/readExtractedDir", async (req, res) => {
 		res.send(items);
 	});
 });
+//* use resetSession route to clean up folder.
+app.get("/resetSession", (req, res) => {
+	// Destroy the session to reset the visit count
+	req.session.destroy(() => {
+		fs.rmSync(uniqueDirPath, { recursive: true });
 
+		res.send("Session has been reset.");
+	});
+});
 app.listen(3000, () => console.log("server running at 3000"));
