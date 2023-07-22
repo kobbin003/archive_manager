@@ -69,13 +69,32 @@ app.get("/readExtractedDir", async (req, res) => {
 		res.send(items);
 	});
 });
-//* use resetSession route to clean up folder.
+//* use resetSession route to clean up folder i.e uniqueDirPath.
 app.get("/resetSession", (req, res) => {
 	// Destroy the session to reset the visit count
 	req.session.destroy(() => {
 		fs.rmSync(uniqueDirPath, { recursive: true });
 
 		res.send("Session has been reset.");
+	});
+});
+//* API to download individual item
+app.get("/download/:id", async (req, res) => {
+	const id = req.params.id;
+	const queryPath = req.query.path;
+
+	const filteredFile = items && items.filter((item) => item.id == id);
+	const fileName = filteredFile[0].item;
+	const filePath = queryPath
+		? path.join(uniqueDirPath, queryPath, fileName)
+		: path.join(uniqueDirPath, fileName);
+	// const filePath = `${uniqueDirPath}/${fileName}`;
+	console.log("filePath", fileName, filePath);
+	res.download(filePath, fileName, (err) => {
+		if (err) {
+			res.send("error");
+			console.error(err);
+		}
 	});
 });
 app.listen(3000, () => console.log("server running at 3000"));
