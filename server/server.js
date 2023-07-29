@@ -39,8 +39,9 @@ app.get("/", (req, res) => {
 });
 
 app.post("/upload", async (req, res) => {
-	const uploadSession = req.session.id;
-	const uploadDir = path.join(__dirname, uploadSession, "uploads");
+	const sessionId = req.session.id;
+	const uploadSessionDir = path.join("theFolder", sessionId);
+	const uploadDir = path.join(__dirname, uploadSessionDir, "uploads");
 	try {
 		//* use promise to wait for directory to be created
 		//* OR
@@ -66,27 +67,28 @@ app.post("/upload", async (req, res) => {
 	console.log("File write completed.");
 
 	//* extract the rar file & place it in 'uniqueDirPath'
-	const extractRarPath = path.join(__dirname, uploadSession, "extracts");
+	const extractRarPath = path.join(__dirname, uploadSessionDir, "extracts");
 	await extractRarArchive(filePath, extractRarPath);
 
 	//* read the extractedDir (ASYNC - AWAIT)
 	const extractedFiles = await readExtractedDir(extractRarPath);
 	//  send the upload session to the user
-	res.json({ sessionId: uploadSession, extractedFiles });
+	res.json({ sessionId, extractedFiles });
 
 	//* read the extractedDir (ASYNC -  then())
 	// readExtractedDir(extractRarPath).then((extractedFiles) =>
 	// 	//* send the upload session to the user
-	// 	res.json({ sessionId: uploadSession, extractedFiles })
+	// 	res.json({ sessionId: sessionId, extractedFiles })
 	// );
 
 	//* read the extractedDir ( CALLBACK : works for both async and non-async function )
 	// readExtractedDir(extractRarPath, (extractedFiles) =>
-	// 	res.json({ sessionId: uploadSession, extractedFiles })
+	// 	res.json({ sessionId: sessionId, extractedFiles })
 	// );
 });
+
+//* JUST A DEMO ROUTE TO PRACTICE CREATING FILE FROM STREAMS
 app.post("/createFile", (req, res) => {
-	//* JUST A DEMO ROUTE TO PRACTICE CREATING FILE FROM STREAMS
 	console.log("/file");
 
 	//* WAY - 1 [creates file from "data" event of req's "on" method]
@@ -111,31 +113,30 @@ app.post("/createFile", (req, res) => {
 const uniqueDirPath = `./dir_${uuidv4()}`;
 
 //* use resetSession route to clean up folder i.e session  Folder
-app.get("/resetSession/:id", (req, res) => {
+app.delete("/resetSession/:id", (req, res) => {
 	const sessionId = req.params.id;
 	// Destroy the session to reset the visit count
+	const filePath = path.join("theFolder", sessionId);
 	req.session.destroy(() => {
-		fs.rmSync(sessionId, { recursive: true });
+		fs.rmSync(filePath, { recursive: true });
 
-		res.send("Session Dorectory has been deleted.");
+		res.status(200).json({ msg: "DELETE SUCCESS" });
 	});
 });
 //* API to download individual item
-// app.get("/download/:id", async (req, res) => {
-// 	const id = req.params.id;
-// 	const queryPath = req.query.path;
+app.get("/download/:fileName", async (req, res) => {
+	const fileName = req.params.fileName;
+	const sessionId = req.query.sessionId;
 
-// 	const filteredFile = items && items.filter((item) => item.id == id);
-// 	const fileName = filteredFile[0].item;
-// 	const filePath = queryPath
-// 		? path.join(uniqueDirPath, queryPath, fileName)
-// 		: path.join(uniqueDirPath, fileName);
-// 	console.log("filePath", fileName, filePath);
-// 	res.download(filePath, fileName, (err) => {
-// 		if (err) {
-// 			res.send("error");
-// 			console.error(err);
-// 		}
-// 	});
-// });
+	const filePath = path.join("theFolder", sessionId, "extracts", fileName);
+	console.log("download route", fileName, sessionId);
+	// Set the content-disposition header to trigger the download
+	res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+	res.download(filePath, (err) => {
+		if (err) {
+			res.send("error");
+			console.error(err);
+		}
+	});
+});
 app.listen(3000, () => console.log("server running at 3000"));
