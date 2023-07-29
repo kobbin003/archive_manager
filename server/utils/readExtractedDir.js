@@ -25,7 +25,7 @@ export const readExtractedDir = async (dirPath, callback) => {
 			id: randomUUID(),
 			file,
 			isDir,
-			fileSize: fileSizeConverter(fileSize),
+			fileSize: isDir ? file.length : fileSizeConverter(fileSize),
 			lastModified,
 			fileType,
 		});
