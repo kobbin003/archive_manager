@@ -1,6 +1,38 @@
 import fs from "fs";
 import path from "path";
 
+// USING PROMISES:
+export const findDirectoryPathAsync = async (
+	startPath,
+	targetDirectoryName,
+	callback
+) => {
+	// read the files from the startpath
+	try {
+		const files = await fs.promises.readdir(startPath);
+		for (const file of files) {
+			const filePath = path.join(startPath, file);
+			const stat = fs.statSync(filePath);
+			if (stat.isDirectory()) {
+				if (file === targetDirectoryName) {
+					const targetDirectoryPath = filePath;
+					return targetDirectoryPath;
+				} else {
+					const nestedPath = await findDirectoryPathAsync(
+						filePath,
+						targetDirectoryName
+					);
+					// const targetDirectoryPath = path.join(nestedPath, targetDirectory);
+					return nestedPath;
+				}
+			}
+		}
+		// return targetDirectoryPath;
+	} catch (error) {
+		if (error) throw error;
+	}
+};
+//* ---------------------------------------------------------------------
 export const findDirectoryPath = (startPath, targetDirectoryName, callback) => {
 	// read the files from the startpath
 	fs.readdir(startPath, (err, files) => {
