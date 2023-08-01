@@ -7,9 +7,14 @@ import session from "express-session";
 import cors from "cors";
 import { createExtractorFromData } from "node-unrar-js";
 import { readExtractedDir } from "./utils/readExtractedDir.js";
+import {
+	findDirectoryPath,
+	findDirectoryPathAsync,
+} from "./utils/findDirectoryPath.js";
+import { readDirectory } from "./utils/readDirectory.js";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:3001" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 console.log(path.join("hi", "bye"));
 app.use(
 	session({
@@ -71,7 +76,8 @@ app.post("/upload", async (req, res) => {
 	await extractRarArchive(filePath, extractRarPath);
 
 	//* read the extractedDir (ASYNC - AWAIT)
-	const extractedFiles = await readExtractedDir(extractRarPath);
+	const extractedFiles = await readDirectory(extractRarPath);
+	// const extractedFiles = await readExtractedDir(extractRarPath);
 	//  send the upload session to the user
 	res.json({ sessionId, extractedFiles });
 
@@ -110,6 +116,27 @@ app.post("/createFile", (req, res) => {
 	// res.download(req.body);
 });
 
+app.get("/readDirectory", async (req, res) => {
+	const directoryName = req.query.directoryName;
+	// console.log(directoryName);
+	const sessionId = req.query.sessionId;
+	// console.log(sessionId);
+	const startPath = path.join(__dirname, "theFolder", sessionId);
+	// const startPath = path.join(__dirname, "theFolder", sessionId, "extracts");
+	// console.log(startPath);
+	const dirPath = await findDirectoryPathAsync(startPath, directoryName);
+	// path.join(
+	// 	__dirname,
+	// 	"theFolder",
+	// 	sessionId,
+	// 	"extracts",
+	// 	directoryPath
+	// );
+	// console.log("dirpath", dirPath);
+	const directoryContent = await readDirectory(dirPath);
+	// console.log("directoryContent", directoryContent);
+	res.send({ directoryContent });
+});
 const uniqueDirPath = `./dir_${uuidv4()}`;
 
 //* use resetSession route to clean up folder i.e session  Folder
@@ -128,7 +155,13 @@ app.get("/download/:fileName", async (req, res) => {
 	const fileName = req.params.fileName;
 	const sessionId = req.query.sessionId;
 
-	const filePath = path.join("theFolder", sessionId, "extracts", fileName);
+	const filePath = path.join(
+		__dirname,
+		"theFolder",
+		sessionId,
+		"extracts",
+		fileName
+	);
 	console.log("download route", fileName, sessionId);
 	// Set the content-disposition header to trigger the download
 	res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
