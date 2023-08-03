@@ -14,8 +14,8 @@ import {
 import { readDirectory } from "./utils/readDirectory.js";
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" }));
-console.log(path.join("hi", "bye"));
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3001"] }));
+// console.log(path.join("hi", "bye"));
 app.use(
 	session({
 		// It holds the secret key for session
@@ -69,7 +69,7 @@ app.post("/upload", async (req, res) => {
 		fileStream.on("error", reject);
 	});
 
-	console.log("File write completed.");
+	// console.log("File write completed.");
 
 	//* extract the rar file & place it in 'uniqueDirPath'
 	const extractRarPath = path.join(__dirname, uploadSessionDir, "extracts");
@@ -95,7 +95,7 @@ app.post("/upload", async (req, res) => {
 
 //* JUST A DEMO ROUTE TO PRACTICE CREATING FILE FROM STREAMS
 app.post("/createFile", (req, res) => {
-	console.log("/file");
+	// console.log("/file");
 
 	//* WAY - 1 [creates file from "data" event of req's "on" method]
 	let chunks = [];
@@ -118,24 +118,15 @@ app.post("/createFile", (req, res) => {
 
 app.get("/readDirectory", async (req, res) => {
 	const directoryName = req.query.directoryName;
-	// console.log(directoryName);
 	const sessionId = req.query.sessionId;
-	// console.log(sessionId);
-	const startPath = path.join(__dirname, "theFolder", sessionId);
-	// const startPath = path.join(__dirname, "theFolder", sessionId, "extracts");
-	// console.log(startPath);
+	const startPath = path.join(__dirname, "theFolder", sessionId, "extracts");
 	const dirPath = await findDirectoryPathAsync(startPath, directoryName);
-	// path.join(
-	// 	__dirname,
-	// 	"theFolder",
-	// 	sessionId,
-	// 	"extracts",
-	// 	directoryPath
-	// );
-	// console.log("dirpath", dirPath);
+	const startPathLength = startPath.length;
+	const parentFolderTree = dirPath.substring(startPathLength + 1);
+	//* "+ 1" because want to get rid of the initial "/"
+	// console.log("dirPath", dirPath, parentFolderTree);
 	const directoryContent = await readDirectory(dirPath);
-	// console.log("directoryContent", directoryContent);
-	res.send({ directoryContent });
+	res.send({ directoryContent, parentFolderTree });
 });
 const uniqueDirPath = `./dir_${uuidv4()}`;
 
