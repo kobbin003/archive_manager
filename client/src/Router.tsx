@@ -11,15 +11,13 @@ export const router = createBrowserRouter([
 			{
 				path: "files",
 				element: <RootFolderContent />,
-				// children: [
-				// 	{
-				// 		path: "fileID/:id",
-				// 		element: <NestedFolderContent />,
-				// 	},
-				// ],
 			},
+			// {
+			// 	path: "files/:fileName",
+			// 	element: <NestedFolderContent />,
+			// },
 			{
-				path: "files/:id",
+				path: "files/:fileName/*",
 				element: <NestedFolderContent />,
 			},
 		],
