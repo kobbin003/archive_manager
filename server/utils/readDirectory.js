@@ -2,28 +2,29 @@ import { randomUUID } from "crypto";
 import fs from "fs";
 import path from "path";
 import { fileSizeConverter } from "./fileSizeConverter.js";
-// import { v4 as uuidv4 } from "uuid";
 import { fileTypeFromFile } from "file-type";
+import { itemCountInDir } from "./itemCountInDir.js";
+import { calcDirSize } from "./calcDirSize.js";
 
 //* async function :
 export const readDirectory = async (dirPath, callback) => {
 	const files = await fs.promises.readdir(dirPath);
 	let items = [];
+	// let totalDirSize;
 	for (const file of files) {
 		let isDir = false;
-		console.log("file-length", file);
 		const filePath = path.join(dirPath, file);
 		const stat = fs.statSync(filePath);
 		const fileSize = stat.size;
 		const lastModified = stat.ctime;
 		let fileType;
-
+		let dirItemCount;
+		let dirSize;
 		if (stat.isDirectory()) {
 			isDir = true;
-			// items.push(true);
+			dirSize = await calcDirSize(filePath);
+			dirItemCount = await itemCountInDir(filePath);
 		} else if (stat.isFile) {
-			// items.push(false);
-			// fileType = "type";
 			try {
 				fileType = await fileTypeFromFile(file);
 			} catch (error) {
@@ -39,7 +40,9 @@ export const readDirectory = async (dirPath, callback) => {
 			id: randomUUID(),
 			file,
 			isDir,
-			fileSize: isDir ? file.length : fileSizeConverter(fileSize),
+			fileSize: isDir
+				? { ...fileSizeConverter(dirSize), items: dirItemCount }
+				: fileSizeConverter(fileSize),
 			lastModified,
 			fileType: isDir ? { ext: "Folder", mime: "Folder" } : fileType,
 		});
