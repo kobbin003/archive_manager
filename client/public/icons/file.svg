@@ -1,0 +1,11 @@
+<svg fill="#000000" viewBox="0 0 24 24" id="file-3" data-name="Flat Line" xmlns="http://www.w3.org/2000/svg"
+    class="icon flat-line">
+    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+    <g id="SVGRepo_iconCarrier">
+        <path id="secondary" d="M12,8l1-5H6A1,1,0,0,0,5,4V20a1,1,0,0,0,1,1H18a1,1,0,0,0,1-1V9Z"
+            style="fill: #D4D4CC; stroke-width: 2;"></path>
+        <path id="primary" d="M18,21H6a1,1,0,0,1-1-1V4A1,1,0,0,1,6,3h7l6,6V20A1,1,0,0,1,18,21ZM19,9,13,3,12,8Z"
+            style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
+    </g>
+</svg>
