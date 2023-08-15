@@ -1,18 +1,25 @@
 import FileViewerRow from "../fileViewerRow";
-import { ReceivedFile } from "../uploader/types";
+import { ReceivedFileNested, ReceivedFileRoot } from "../uploader/types";
 
-const FileViewer = ({ file }: { file: ReceivedFile }) => {
-	// console.log("fileViewer", file);
+const FileViewer = ({
+	file,
+}: {
+	file: ReceivedFileRoot | ReceivedFileNested;
+}) => {
 	return (
-		<>
+		<div className="w-full">
 			{file.extractedFiles.map((item) => (
 				<FileViewerRow
 					file={item}
 					key={item.id}
 					sessionId={file.sessionId}
+					//* typeGuard to check whether type is ...Root or ...Nested
+					parentFolderTree={
+						"parentFolderTree" in file ? file.parentFolderTree : undefined
+					}
 				/>
 			))}
-		</>
+		</div>
 	);
 };
 
