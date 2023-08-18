@@ -3,7 +3,7 @@ import fs from "fs";
 
 export async function extractRarArchive(file, destination) {
 	try {
-		// create destination folder
+		// create the "destination" folder
 		fs.mkdir(destination, { recursive: true }, (err) => {
 			if (err) throw err;
 		});
