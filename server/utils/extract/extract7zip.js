@@ -3,7 +3,7 @@ import fs from "fs";
 
 export function extract7Zip(filePath, destinationPath) {
 	/** check if the "destination" folder exists or not
-	 * IF not , create the "destination" folder
+	 * IF not, create the "destination" folder
 	 */
 	if (!fs.existsSync(destinationPath)) {
 		fs.mkdirSync(destinationPath, { recursive: true });
