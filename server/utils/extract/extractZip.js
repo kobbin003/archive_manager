@@ -24,6 +24,7 @@ export function extractZip(filePath, destinationPath) {
 			/** check if the "saveFilePathDir" folder exists or not
 			 * IF not , create the "saveFilePathDir" folder
 			 */
+
 			if (!fs.existsSync(saveFilePathDir)) {
 				fs.mkdirSync(saveFilePathDir, { recursive: true });
 			}
