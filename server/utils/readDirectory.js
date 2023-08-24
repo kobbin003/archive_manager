@@ -30,6 +30,9 @@ export const readDirectory = async (dirPath, callback) => {
 			} else if (stat.isFile()) {
 				try {
 					fileType = await fileTypeFromFile(filePath);
+					if (fileType == undefined) {
+						fileType = { ext: "", mime: "" };
+					}
 				} catch (error) {
 					console.log("error", error);
 					fileType = { ext: "", mime: "" };
