@@ -1,40 +1,41 @@
-import { extract7zMin } from "./extract/extract7zMin.js";
-import { extractRarArchive } from "./extract/extractRar.js";
-import { extractTarGzip } from "./extract/extractTarGzip.js";
-import { extractTarXZ } from "./extract/extractTarXZ.js";
-import extractXZ from "./extract/extractXZ.js";
+import { compress7zMin } from "./compress/compress7zMin.js";
+import { compressTarGz } from "./compress/compressTarGzip.js";
+import { compressTarXZ } from "./compress/compressTarXZ.js";
+import { compressXZ } from "./compress/compressXZ.js";
 
-export const chooseCompressMethod = async (fileType, filePath, extractPath) => {
+export const chooseCompressMethod = async (
+	fileType,
+	filePath,
+	compressPath,
+	fileName
+) => {
 	switch (fileType) {
-		case "rar":
-			await extractRarArchive(filePath, extractPath);
-			return;
 		case "zip":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "zip");
 			return;
 		case "7z":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "7z");
 			return;
 		case "tar":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "tar");
 			return;
 		case "gz":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "gzip");
 			return;
 		case "bz":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "bzip2");
 			return;
 		case "tar.bz2":
-			await extract7zMin(filePath, extractPath);
+			await compress7zMin(filePath, compressPath, fileName, "tarbzip2");
 			return;
 		case "tar.gz":
-			await extractTarGzip(filePath, extractPath);
+			await compressTarGz(filePath, compressPath, fileName);
 			return;
 		case "tar.xz":
-			await extractTarXZ(filePath, extractPath);
+			await compressTarXZ(filePath, compressPath, fileName);
 			return;
 		case "xz":
-			await extractXZ(filePath, extractPath);
+			await compressXZ(filePath, compressPath, fileName);
 			return;
 
 		default:
