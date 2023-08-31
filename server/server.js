@@ -1,17 +1,16 @@
 import express from "express";
 import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { extractRarArchive } from "./utils/extractRar.js";
+import { extractRarArchive } from "./utils/extract/extractRar.js";
 import path from "path";
 import session from "express-session";
 import cors from "cors";
-import { createExtractorFromData } from "node-unrar-js";
-import { readExtractedDir } from "./utils/readExtractedDir.js";
-import {
-	findDirectoryPath,
-	findDirectoryPathAsync,
-} from "./utils/findDirectoryPath.js";
+import { findDirectoryPathAsync } from "./utils/findDirectoryPath.js";
 import { readDirectory } from "./utils/readDirectory.js";
+import { chooseExtractMethod } from "./utils/chooseExtractMethod.js";
+import { fileTypeFromBuffer, fileTypeFromFile } from "file-type";
+import formidable from "formidable";
+import { chooseCompressMethod } from "./utils/chooseCompressMethod.js";
 
 const app = express();
 app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3001"] }));
@@ -43,54 +42,123 @@ app.get("/", (req, res) => {
 	res.send({ id: req.session.id });
 });
 
-app.post("/upload", async (req, res) => {
+/** store the file in "upload" folder
+ * & extract the file's content in "extract" folder
+ * & send the extracted files */
+app.post("/upload/extract", async (req, res) => {
+	const fileType = req.query.fileType;
 	const sessionId = req.session.id;
 	const uploadSessionDir = path.join("theFolder", sessionId);
 	const uploadDir = path.join(__dirname, uploadSessionDir, "uploads");
-	try {
-		//* use promise to wait for directory to be created
-		//* OR
-		//* use mkdirSync
-		await fs.promises.mkdir(uploadDir, { recursive: true });
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: "Failed to create directory" });
+	if (!fs.existsSync(uploadDir)) {
+		try {
+			//* use promise to wait for directory to be created
+			//* OR
+			//* use mkdirSync
+			await fs.promises.mkdir(uploadDir, { recursive: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: "Failed to create directory" });
+		}
 	}
-	const filePath = path.join(uploadDir, "uploaded.rar");
+	const filePath = path.join(uploadDir, `uploaded.${fileType}`);
 	//* create a writestream to create a file
-	const fileStream = fs.createWriteStream(filePath, {
+	const writeFileStream = fs.createWriteStream(filePath, {
 		encoding: "binary",
 	});
 	//* Pipe the request stream to the writestream
-	req.pipe(fileStream);
+	req.pipe(writeFileStream);
 	//* Wait for the file stream to finish writing
 	await new Promise((resolve, reject) => {
-		fileStream.on("finish", resolve);
-		fileStream.on("error", reject);
+		writeFileStream.on("finish", resolve);
+		writeFileStream.on("error", reject);
 	});
 
-	// console.log("File write completed.");
-
 	//* extract the rar file & place it in 'uniqueDirPath'
-	const extractRarPath = path.join(__dirname, uploadSessionDir, "extracts");
-	await extractRarArchive(filePath, extractRarPath);
-
+	const extractPath = path.join(__dirname, uploadSessionDir, "extracts");
+	await chooseExtractMethod(fileType, filePath, extractPath);
+	// const extractMethod = chooseExtractMethod(fileType, filePath, extractPath);
+	// await extractMethod(filePath, extractPath);
 	//* read the extractedDir (ASYNC - AWAIT)
-	const extractedFiles = await readDirectory(extractRarPath);
-	// const extractedFiles = await readExtractedDir(extractRarPath);
+	const extractedFiles = await readDirectory(extractPath);
 	//  send the upload session to the user
 	res.json({ sessionId, extractedFiles });
 
 	//* read the extractedDir (ASYNC -  then())
-	// readExtractedDir(extractRarPath).then((extractedFiles) =>
+	// readExtractedDir(extractPath).then((extractedFiles) =>
 	// 	//* send the upload session to the user
 	// 	res.json({ sessionId: sessionId, extractedFiles })
 	// );
 
 	//* read the extractedDir ( CALLBACK : works for both async and non-async function )
-	// readExtractedDir(extractRarPath, (extractedFiles) =>
+	// readExtractedDir(extractPath, (extractedFiles) =>
 	// 	res.json({ sessionId: sessionId, extractedFiles })
 	// );
+});
+
+/** store the file in "upload" folder
+ * & compress the file's content in "compressed" folder
+ * & send the compressed file */
+app.post("/upload/compress", async (req, res) => {
+	const fileType = req.query.fileType;
+	const uploadType = req.query.uploadType;
+	const sessionId = req.session.id;
+	const uploadSessionDir = path.join("theFolder", sessionId);
+	const uploadDir = path.join(__dirname, uploadSessionDir, "uploads");
+	if (!fs.existsSync(uploadDir)) {
+		try {
+			//* use promise to wait for directory to be created
+			//* OR
+			//* use mkdirSync
+			await fs.promises.mkdir(uploadDir, { recursive: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).json({ error: "Failed to create directory" });
+		}
+	}
+
+	/* Parse the files uploaded and save it to uploadDir(using formidable) */
+	const form = formidable({
+		uploadDir,
+		keepExtensions: true,
+		createDirsFromUploads: uploadType == "compressFolder",
+		// Use it to control newFilename.
+		filename: (name, ext, part, form) => {
+			/**
+			 * name: originalFileName
+			 * ext: empty
+			 * part: details of each files(stream)
+			 * form: the form req
+			 */
+			return part.originalFilename; // Will be joined with options.uploadDir.
+		},
+	});
+
+	try {
+		await form.parse(req);
+	} catch (error) {
+		console.log("formidable error", error);
+	}
+
+	/** compress the file */
+	let filePath = path.join(uploadDir);
+	const file = fs.readdirSync(filePath);
+	filePath = path.join(uploadDir, file[0]);
+	const compressDestinationPath = path.join(
+		__dirname,
+		uploadSessionDir,
+		"compressed"
+	);
+	await chooseCompressMethod(
+		fileType,
+		filePath,
+		compressDestinationPath,
+		"compress"
+	);
+
+	/** read the directory where the compressed files are */
+	const compressedFiles = fs.readdirSync(compressDestinationPath);
+	res.json({ sessionId, compressedFile: compressedFiles[0] });
 });
 
 //* JUST A DEMO ROUTE TO PRACTICE CREATING FILE FROM STREAMS
@@ -116,6 +184,7 @@ app.post("/createFile", (req, res) => {
 	// res.download(req.body);
 });
 
+/** */
 app.get("/readDirectory", async (req, res) => {
 	const directoryName = req.query.directoryName;
 	const sessionId = req.query.sessionId;
@@ -124,7 +193,7 @@ app.get("/readDirectory", async (req, res) => {
 	const startPathLength = startPath.length;
 	const parentFolderTree = dirPath.substring(startPathLength + 1);
 	//* "+ 1" because want to get rid of the initial "/"
-	// console.log("dirPath", dirPath, parentFolderTree);
+	// console.log("dirPath", dirPath, parentFolderTree, startPath);
 	const directoryContent = await readDirectory(dirPath);
 	res.send({ directoryContent, parentFolderTree });
 });
@@ -135,11 +204,13 @@ app.delete("/resetSession/:id", (req, res) => {
 	const sessionId = req.params.id;
 	// Destroy the session to reset the visit count
 	const filePath = path.join("theFolder", sessionId);
-	req.session.destroy(() => {
-		fs.rmSync(filePath, { recursive: true });
+	if (filePath) {
+		req.session.destroy(() => {
+			fs.rmSync(filePath, { recursive: true });
 
-		res.status(200).json({ msg: "DELETE SUCCESS" });
-	});
+			res.status(200).json({ msg: "DELETE SUCCESS" });
+		});
+	}
 });
 //* API to download individual item
 app.get("/download/:fileName", async (req, res) => {
