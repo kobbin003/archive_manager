@@ -1,7 +1,12 @@
 import _7z from "7zip-min";
 import fs from "fs";
 import path from "path";
-export function compress7zMin(filePath, destinationPath, fileName, fileType) {
+export async function compress7zMin(
+	filePath,
+	destinationPath,
+	fileName,
+	fileType
+) {
 	/** check if the "destination" folder exists or not
 	 * IF not, create the "destination" folder
 	 */
@@ -26,7 +31,6 @@ export function compress7zMin(filePath, destinationPath, fileName, fileType) {
 		case "tar":
 			ext = "tar";
 			break;
-
 		case "zip":
 			ext = "zip";
 			break;
@@ -37,7 +41,14 @@ export function compress7zMin(filePath, destinationPath, fileName, fileType) {
 	// const name = path.join(destinationPath, `some.7z`);
 	const name = path.join(destinationPath, `${fileName}.${ext}`);
 
-	_7z.pack(filePath, name, (err) => {
-		console.log("error", err);
+	return new Promise((resolve, reject) => {
+		_7z.pack(filePath, name, (err) => {
+			console.log("error", err);
+			if (err) {
+				reject(err);
+			} else {
+				resolve();
+			}
+		});
 	});
 }

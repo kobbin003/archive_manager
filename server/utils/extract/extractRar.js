@@ -24,7 +24,6 @@ export async function extractRarArchive(file, destination) {
 // Files are put directly into the destination
 // The full path of folders are created if they are missing
 
-extractRarArchive("./sample.rar", "./");
 // extractRarArchive("/path/to/archive.rar", "~/Desktop/files");
 
 // -----------------------------------------------------

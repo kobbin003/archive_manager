@@ -4,8 +4,8 @@ import path from "path";
 import { compress7zMin } from "./compress7zMin.js";
 
 /** for compressed tar files viz TAR.BZ2, TAR.XZ */
-
-export function compressTarBz2(filePath, destinationPath, fileName) {
+//* tar.bz can also be compressed with "compress7zMin"
+export async function compressTarBz2(filePath, destinationPath, fileName) {
 	/** check if the "destination" folder exists or not
 	 * IF not, create the "destination" folder
 	 */
@@ -22,8 +22,8 @@ export function compressTarBz2(filePath, destinationPath, fileName) {
 		fs.mkdirSync(tempCompressedTarFolder, { recursive: true });
 	}
 
-	compress7zMin(filePath, tempCompressedTarFolder, fileName, "tar");
+	await compress7zMin(filePath, tempCompressedTarFolder, fileName, "tar");
 
 	// now compress the tar file to bzip2 type:
-	compress7zMin(filePath, destinationPath, fileName, "tarbzip2");
+	await compress7zMin(filePath, destinationPath, fileName, "tarbzip2");
 }

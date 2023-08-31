@@ -1,12 +1,12 @@
 import _7z from "7zip-min";
 import fs from "fs";
 import path from "path";
-import { compress7zMin } from "./extract7zMin.js";
-import { compressXZ } from "./extractXZ.js";
+import { compress7zMin } from "./compress7zMin.js";
+import { compressXZ } from "./compressXZ.js";
 
 /** for compressed tar files viz TAR.BZ2, TAR.XZ */
 
-export function compressTarXZ(filePath, destinationPath, fileName) {
+export async function compressTarXZ(filePath, destinationPath, fileName) {
 	/** check if the "destination" folder exists or not
 	 * IF not, create the "destination" folder
 	 */
@@ -25,7 +25,7 @@ export function compressTarXZ(filePath, destinationPath, fileName) {
 	// _7z.pack(filePath, tempCompressedTarFolder, (err) => {
 	// 	console.log("error", err);
 	// });
-	compress7zMin(filePath, tempCompressedTarFolder, fileName, "tar");
+	await compress7zMin(filePath, tempCompressedTarFolder, fileName, "tar");
 
 	const compressedTarFilePath = path.join(
 		tempCompressedTarFolder,
@@ -33,5 +33,5 @@ export function compressTarXZ(filePath, destinationPath, fileName) {
 	);
 
 	// now compress the tar file to xz type:
-	compressXZ(compressedTarFilePath, destinationPath, `${fileName}.tar`);
+	await compressXZ(compressedTarFilePath, destinationPath, `${fileName}.tar`);
 }
