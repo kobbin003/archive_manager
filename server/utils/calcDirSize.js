@@ -7,7 +7,6 @@ export const calcDirSize = async (dirPath) => {
 		const filePath = path.join(dirPath, file);
 		const stat = fs.statSync(filePath);
 		if (stat.isDirectory()) {
-			// const nestedDirPath =
 			const nestedDirSize = await calcDirSize(filePath);
 			dirSize += nestedDirSize;
 		} else if (stat.isFile()) {

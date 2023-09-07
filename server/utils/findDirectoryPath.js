@@ -23,7 +23,9 @@ export const findDirectoryPathAsync = async (
 						targetDirectoryName
 					);
 					// const targetDirectoryPath = path.join(nestedPath, targetDirectory);
-					return nestedPath;
+					if (nestedPath) {
+						return nestedPath;
+					}
 				}
 			}
 		}
@@ -32,11 +34,13 @@ export const findDirectoryPathAsync = async (
 		if (error) throw error;
 	}
 };
+
 //* ---------------------------------------------------------------------
 export const findDirectoryPath = (startPath, targetDirectoryName, callback) => {
 	// read the files from the startpath
 	fs.readdir(startPath, (err, files) => {
 		if (err) throw err;
+
 		// find the directory
 		const targetDirectory = files.find((file) => {
 			const filePath = path.join(startPath, file);

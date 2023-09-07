@@ -9,14 +9,10 @@ import { calcDirSize } from "./calcDirSize.js";
 export const readDirectory = async (dirPath, callback) => {
 	try {
 		const files = await fs.promises.readdir(dirPath);
-		// const files = fs.readdirSync(dirPath);
-		// console.log(dirPath, files);
 		let items = [];
-		// let totalDirSize;
 		for (const file of files) {
 			let isDir = false;
 			const filePath = path.join(dirPath, file);
-			// console.log("filePath", filePath);
 			const stat = await fs.promises.stat(filePath);
 			const fileSize = stat.size;
 			const lastModified = stat.ctime;
@@ -59,10 +55,8 @@ export const readDirectory = async (dirPath, callback) => {
 		// * 1. The use of callbacks is more common in traditional asynchronous functions
 		// * 2. With async/await, you can simplify asynchronous code and avoid the callback hell by using the await keyword to wait for the result of a Promise.
 		// * 3. So, can handle the result in a more synchronous-style manner.
-		return items;
-		// callback(items);
+		return { data: items };
 	} catch (error) {
-		console.error("Error reading directory:", error);
-		return [];
+		return { error: { message: "file Not found" } };
 	}
 };

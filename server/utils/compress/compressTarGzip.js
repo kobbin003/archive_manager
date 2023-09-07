@@ -39,6 +39,7 @@ export const compressTarGz = (filePath, destinationPath, fileName) => {
 	}
 	// directory of the file
 	const filePathDir = path.dirname(filePath);
+
 	// content of the dir
 	//* we cannot use fs.readFile
 	//* Because "read below"

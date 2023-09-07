@@ -5,7 +5,6 @@ export const fileSizeConverter = (fileSizeInBytes) => {
 	const fileSizeInMB = (fileSizeInKB / 1024).toFixed(2);
 	const fileSizeInGB = (fileSizeInMB / 1024).toFixed(2);
 
-	// const fileUnit
 	const fileSize =
 		fileSizeInBytes < 100
 			? { fileSize: fileSizeInBytes, unit: "bytes" }

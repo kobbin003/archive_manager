@@ -13,6 +13,7 @@ export async function compressTarXZ(filePath, destinationPath, fileName) {
 	if (!fs.existsSync(destinationPath)) {
 		fs.mkdirSync(destinationPath, { recursive: true });
 	}
+
 	// create a temp folder to store the compressed tar file
 	const tempCompressedTarFolder = path.join(
 		destinationPath,
@@ -22,9 +23,7 @@ export async function compressTarXZ(filePath, destinationPath, fileName) {
 	if (!fs.existsSync(tempCompressedTarFolder)) {
 		fs.mkdirSync(tempCompressedTarFolder, { recursive: true });
 	}
-	// _7z.pack(filePath, tempCompressedTarFolder, (err) => {
-	// 	console.log("error", err);
-	// });
+
 	await compress7zMin(filePath, tempCompressedTarFolder, fileName, "tar");
 
 	const compressedTarFilePath = path.join(

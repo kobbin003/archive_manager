@@ -37,8 +37,7 @@ export async function compress7zMin(
 		default:
 			break;
 	}
-	// const name = path.join(`${destinationPath}.${ext}`);
-	// const name = path.join(destinationPath, `some.7z`);
+
 	const name = path.join(destinationPath, `${fileName}.${ext}`);
 
 	return new Promise((resolve, reject) => {
