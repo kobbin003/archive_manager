@@ -50,7 +50,7 @@ const Uploader: FC<UploaderProps> = ({ setReceivedFile }) => {
 			method: "POST",
 			body: selectedFile, // selectedFile is the uploaded file by the user
 		};
-		fetch(`http://localhost:3000/upload`, uploadOptions)
+		fetch(`http://localhost:3000/upload/extract`, uploadOptions)
 			.then((res) => res.json())
 			.then((result: ReceivedFile) => {
 				setReceivedFile(result);
