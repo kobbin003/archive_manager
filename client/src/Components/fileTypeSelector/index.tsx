@@ -1,49 +1,83 @@
-import React, { ChangeEvent, useState } from "react";
+import {
+	ChangeEvent,
+	Dispatch,
+	FC,
+	SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { disableOption } from "../../utils/disableOption";
 
-const FileTypeSelector = () => {
-	const [selectedValue, setSelectedValue] = useState<string | undefined>(
-		"callToAction"
-	);
+const fileTypes = [
+	"rar",
+	"zip",
+	"7z",
+	"tar",
+	"tar.gz",
+	"tar.bz2",
+	"tar.xz",
+	"xz",
+	"gz",
+	"bz",
+];
+interface FileTypeSelectorProps {
+	setTypeSelected: Dispatch<SetStateAction<string>>;
+	action: "extract" | "compressFile" | "compressFolder";
+}
+const FileTypeSelector: FC<FileTypeSelectorProps> = ({
+	setTypeSelected,
+	action,
+}) => {
+	const [selectedValue, setSelectedValue] = useState<string>("callToAction");
+
+	const selectRef = useRef<HTMLSelectElement>(null);
+
 	const handleOnChangeSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-		// console.log(e.currentTarget.value, e.currentTarget.options);
 		const currentSelectValue = e.currentTarget.value;
-		const optionsCollection = e.currentTarget.options;
-		const optionsArray = Array.from(optionsCollection);
-		const selectedOption = optionsArray.find(
-			(option) => option.value == currentSelectValue
-		);
-		setSelectedValue(selectedOption?.value);
-		// console.log(currentSelectValue, optionsArray, selectedOption);
+		setSelectedValue(currentSelectValue);
 	};
+
+	useEffect(() => {
+		if (selectedValue !== "callToAction") {
+			setTypeSelected(selectedValue); //? enable the file selector
+		}
+	}, [selectedValue]);
+
+	useEffect(() => {
+		// reset typeSelected when action is changed
+		if (selectRef.current?.selectedIndex) {
+			const el = selectRef.current as HTMLSelectElement;
+			el.selectedIndex = 0;
+		}
+	}, [action]);
+
 	return (
 		<select
 			name="fileType"
 			id="fileType"
 			onChange={handleOnChangeSelect}
 			value={selectedValue}
-			className="border border-gray-400 rounded-sm p-1"
+			ref={selectRef}
+			className={`border-2 border-gray-400  rounded-sm p-1 cursor-pointer `}
 		>
 			<option
 				value="callToAction"
 				disabled
-				hidden
+				hidden={true}
+				className="bg-orange-300 min-w-max"
 			>
-				Select file type
+				Select type
 			</option>
-			<option value="rar">rar</option>
-			<option value="zip">zip</option>
-			<option value="7z">7z</option>
-			<option value="tar">tar</option>
-			<option value="tar.gz">tar.gz</option>
-			<option value="tar.bz2">tar.bz2</option>
-			<option value="tar.xz">tar.xz</option>
-			<option value="xz">xz</option>
-			<option value="dmg">dmg</option>
-			<option value="gzip">gzip</option>
-			<option value="bzip2">bzip2</option>
-			<option value="cab">cab</option>
-			<option value="iso">iso</option>
-			<option value="jar">jar</option>
+			{fileTypes.map((type) => (
+				<option
+					value={type}
+					key={type}
+					disabled={disableOption(type, action)}
+				>
+					{type}
+				</option>
+			))}
 		</select>
 	);
 };

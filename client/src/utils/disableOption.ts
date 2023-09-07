@@ -1,10 +1,10 @@
 export const disableOption = (optionValue: string, action: string): boolean => {
-	if (action == "compress file") {
+	if (action == "compressFile") {
 		if (optionValue == "rar") {
 			return true;
 		} else return false;
 	}
-	if (action == "compress folder") {
+	if (action == "compressFolder") {
 		if (
 			optionValue == "rar" ||
 			optionValue == "xz" ||

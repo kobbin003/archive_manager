@@ -2,48 +2,65 @@ import { useLocation } from "react-router-dom";
 import FileViewer from "../../Components/fileViewer";
 import { useEffect, useState } from "react";
 import { ReceivedFileNested } from "../../Components/uploader/types";
+import ErrorComponent from "../../Components/error";
 
 const NestedFolderContent = () => {
 	const {
 		state: { directoryName },
 	} = useLocation();
-	const [folderContent, setFolderContent] = useState<ReceivedFileNested>();
+	const [folderContent, setFolderContent] = useState<
+		ReceivedFileNested | "loading"
+	>();
 	const [theError, setTheError] = useState();
+
 	useEffect(() => {
 		const sessionId = localStorage.getItem("sessionId");
 		if (sessionId) {
+			setFolderContent("loading");
 			fetch(
 				`http://localhost:3000/readDirectory?directoryName=${directoryName}&sessionId=${sessionId}`
 			)
-				.then((res) => res.json())
+				.then((res) => {
+					return res.json();
+				})
 				.then((result) => {
-					// if (id) {
-					// console.log(result);
-					setFolderContent({
-						extractedFiles: result.directoryContent,
-						sessionId,
-						parentFolderTree: result.parentFolderTree,
-					});
-					// }
+					if (result.data) {
+						setFolderContent({
+							files: result.data.files,
+							sessionId,
+							parentFolderTree: result.data.parentFolderTree,
+							error: null,
+						});
+					} else if (result.error) {
+						setFolderContent({
+							files: null,
+							sessionId,
+							parentFolderTree: null,
+							error: result.error,
+						});
+					}
 				})
 				.catch((err) => {
-					// console.error(err);
 					setTheError(err);
 				});
 		}
 	}, [directoryName]);
+
 	if (theError) return <p>Somthing went wrong. try again..</p>;
+
+	if (folderContent && folderContent !== "loading" && folderContent.error) {
+		return <ErrorComponent message={folderContent.error.message} />;
+	}
 	return (
 		<>
 			{folderContent ? (
-				<>
-					<FileViewer
-						file={folderContent}
-						key={folderContent.parentFolderTree}
-					/>
-				</>
+				folderContent == "loading" ? (
+					<h1 className="w-full text-center">Loading...</h1>
+				) : (
+					<FileViewer file={folderContent} />
+				)
 			) : (
-				<p>nada</p>
+				<></>
 			)}
 		</>
 	);

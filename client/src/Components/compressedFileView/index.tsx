@@ -1,16 +1,15 @@
 import { useOutletContext } from "react-router-dom";
 interface CompressedFileType {
 	sessionId: string;
-	compressedFile: { file: string; uploadFileName: string; fileType: string };
+	files: { file: string; uploadFileName: string; fileType: string };
 	action: string;
 }
 const CompressedFileView = () => {
 	const context: CompressedFileType[] = useOutletContext();
-	const { compressedFile, sessionId, action } = context[0];
+	const { files, sessionId, action } = context[0];
 
-	const downloadURL = `http://localhost:3000/download/compress/${compressedFile.fileType}?sessionId=${sessionId}`;
+	const downloadURL = `http://localhost:3000/download/compress/${files.fileType}?sessionId=${sessionId}`;
 
-	console.log("context", action);
 	return (
 		<div className="flex-col w-3/4">
 			<p className=" text-sm flex items-center p-3">
@@ -33,18 +32,14 @@ const CompressedFileView = () => {
 					/>
 				)}
 				&nbsp;
-				<span className="text-green-400">{compressedFile.uploadFileName}</span>
+				<span className="text-green-400">{files.uploadFileName}</span>
 				{action == "compressFolder" && <span>/</span>}
 			</p>
-			<div className="flex  justify-center bg-slate-900 p-3">
-				<p className="flex-1 pl-2">{compressedFile.file}</p>
+			<div className="flex flex-col sm:flex-row  justify-center items-center bg-slate-900 p-3 text-sm border-2 border-slate-500/80 rounded-sm">
+				<p className="flex-1 pb-2 sm:pb-0">{files.file}</p>
 
-				<a
-					href={downloadURL}
-					target="_blank"
-				>
-					<button className="bg-green-600 h-6 flex items-center px-1 hover:scale-105 shadow shadow-black">
-						{/* <button className="flex h-8 hover:after:content-['download'] hover:after:text-xs hover:after:absolute hover:after:border-2 hover:after:border-gray-300/50 hover:after:bg-slate-200/20 after:translate-x-1 after:translate-y-1"> */}
+				<a href={downloadURL}>
+					<button className="bg-green-600 flex items-center py-1 px-2 hover:scale-105 shadow shadow-black rounded-sm">
 						<img
 							src="/public/icons/download.svg"
 							height={25}

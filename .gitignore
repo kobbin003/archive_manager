@@ -5,3 +5,5 @@ node_modules
 /client0
 /server/theFolder
 /server/serve.js
+/server/sample/
+/server/archive_sample/

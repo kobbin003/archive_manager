@@ -25,6 +25,3 @@ dist-ssr
 
 
 # mine
-src/Components
-src/pages
-Router.tsx
