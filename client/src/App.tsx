@@ -22,7 +22,6 @@ function App() {
 	>();
 
 	useEffect(() => {
-		console.log("SERVER_BASE_URL: ", SERVER_BASE_URL);
 		const handleOnUnload = () => {
 			/** remove any sessionId stored in localStorage */
 			const storedSessionId = localStorage.getItem("sessionId");

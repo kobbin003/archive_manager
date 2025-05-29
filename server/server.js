@@ -13,7 +13,6 @@ import "dotenv/config";
 
 const app = express();
 
-console.log("CLIENT_BASE_URL: ", process.env.CLIENT_BASE_URL);
 app.use(
 	cors({
 		origin: [
