@@ -23,7 +23,7 @@ const ContentContainer = () => {
 							className="text-green-400 text-sm flex items-center"
 						>
 							<img
-								src="/public/icons/homeSmiley.svg"
+								src="/icons/homeSmiley.svg"
 								alt=""
 								height={25}
 								width={25}

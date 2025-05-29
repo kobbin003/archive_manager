@@ -69,6 +69,7 @@ const FileSelectorInputExtract: FC<FileSelectorInputExtractProps> = ({
 					return res.json();
 				})
 				.then((result) => {
+					console.log("result", result);
 					if (result.data) {
 						setReceivedFile &&
 							setReceivedFile({

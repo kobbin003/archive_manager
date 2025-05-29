@@ -3,12 +3,7 @@ const Header = () => {
 	return (
 		<div className="p-3">
 			<div className="flex">
-				<img
-					src="/public/icons/logo.svg"
-					alt=""
-					height={80}
-					width={80}
-				/>
+				<img src="/icons/logo.svg" alt="" height={80} width={80} />
 				<h1 className="text-7xl pl-3">
 					webR<span className="text-orange-500">@</span>R
 				</h1>

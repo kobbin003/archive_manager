@@ -20,11 +20,12 @@ app.use(
 
 		// Forces the session to be saved
 		// back to the session store
-		resave: true,
+		resave: false, // if false, don't save session if unmodified
 
-		// Forces a session that is "uninitialized"
-		// to be saved to the store
 		saveUninitialized: true,
+		// if false
+		// i.e creates new session on every request.
+		// I want to destroy session manually so that I can remove the session-folder too.
 	})
 );
 
@@ -35,6 +36,7 @@ export const __dirname = path.dirname(__filename);
  * & extract the file's content in "extract" folder
  * & send the extracted files */
 app.post("/upload/extract", async (req, res) => {
+	console.log("session", req.session.id);
 	const fileType = req.query.fileType;
 
 	const sessionId = req.session.id;
@@ -78,6 +80,7 @@ app.post("/upload/extract", async (req, res) => {
 			res
 				.status(500)
 				.json({ sessionId, error: { message: "Internal Server Error" } });
+
 			reject();
 		});
 	});
@@ -89,16 +92,16 @@ app.post("/upload/extract", async (req, res) => {
 		await chooseExtractMethod(fileType, filePath, extractPath);
 
 		//* read the extractedDir (ASYNC - AWAIT)
-		const extractedFiles = await readDirectory(extractPath);
+		const extractedFilesMetadata = await readDirectory(extractPath);
 
 		//*  send the upload session to the user
-		if (extractedFiles.data) {
+		if (extractedFilesMetadata.data) {
 			res.status(200);
-		} else if (extractedFiles.error) {
+		} else if (extractedFilesMetadata.error) {
 			res.status(500);
 		}
 
-		res.json({ sessionId, ...extractedFiles });
+		res.json({ sessionId, ...extractedFilesMetadata });
 	} catch (error) {
 		res
 			.status(500)
@@ -199,6 +202,7 @@ app.post("/upload/compress", async (req, res) => {
 
 /** read a directory
  * return: directory content & it's parent directory name
+ * Basically the metadata of the content of the file.
  */
 app.get("/readDirectory", async (req, res) => {
 	const directoryName = req.query.directoryName;
@@ -315,24 +319,31 @@ app.get("/preview/extract/:fileName", async (req, res) => {
 });
 
 /** use resetSession route to clean up folder i.e session  Folder */
+//* I reset it every time a new file is chosen.
 app.delete("/resetSession/:id", (req, res) => {
 	const sessionId = req.params.id;
 
 	// Destroy the session to reset the visit count
-	const filePath = path.join("theFolder", sessionId);
+	const filePath = path.join(__dirname, "theFolder", sessionId);
 
 	if (filePath) {
-		req.session.destroy(() => {
-			fs.rmSync(filePath, { recursive: true });
+		req.session.destroy(async () => {
+			// remove asynchronously
+			try {
+				await fs.promises.rm(filePath, { recursive: true });
+				// fs.rmSync(filePath, { recursive: true });
 
-			res.status(200).json({ msg: "DELETE SUCCESS" });
+				res.status(200).json({ msg: "DELETE SUCCESS" });
+			} catch (error) {
+				res.status(500).json({ error: "COULD NOT DELETE THE OLD FILE" });
+			}
 		});
 	}
 });
 
 //* JUST A DEMO ROUTE TO PRACTICE CREATING FILE FROM STREAMS
 app.post("/createFile", (req, res) => {
-	//* WAY - 1 [creates file from "data" event of req's "on" method]
+	//* WAY - 1 [creates file from "data" event of req stream's "on" method]
 	let chunks = [];
 	req.on("data", (data) => {
 		console.log("data", data);

@@ -16,7 +16,7 @@ const CompressedFileView = () => {
 				Uploaded File&nbsp;: &nbsp;
 				{action == "compressFolder" ? (
 					<img
-						src="/public/icons/folder.svg"
+						src="/icons/folder.svg"
 						alt=""
 						height={25}
 						width={25}
@@ -24,7 +24,7 @@ const CompressedFileView = () => {
 					/>
 				) : (
 					<img
-						src="/public/icons/file.svg"
+						src="/icons/file.svg"
 						alt=""
 						height={25}
 						width={25}
@@ -41,12 +41,12 @@ const CompressedFileView = () => {
 				<a href={downloadURL}>
 					<button className="bg-green-600 flex items-center py-1 px-2 hover:scale-105 shadow shadow-black rounded-sm">
 						<img
-							src="/public/icons/download.svg"
+							src="/icons/download.svg"
 							height={25}
 							width={25}
 							className=" "
 						/>
-						<p className="text-white pl-1">Save</p>
+						<p className="text-white pl-1">Download</p>
 					</button>
 				</a>
 			</div>

@@ -32,7 +32,7 @@ const FileViewerRow = ({
 						state={{ directoryName: `${file.file}` }}
 					>
 						<img
-							src="/public/icons/folder.svg"
+							src="/icons/folder.svg"
 							alt=""
 							height={25}
 							width={25}
@@ -44,14 +44,12 @@ const FileViewerRow = ({
 						</p>
 					</Link>
 				) : (
-					<div className="w-full flex justify-between items-center">
-						<img
-							src="/public/icons/file.svg"
-							alt=""
-							height={25}
-							width={25}
-						/>
-						<p className="flex-1 pl-2 block">{file.file}</p>
+					<div className="w-full flex  items-center">
+						<img src="/icons/file.svg" alt="" height={25} width={25} />
+						<p className="flex-1 pl-2 block truncate">
+							{/* <p className="flex-1 pl-2 block bg-green-300 max-w-[30%] truncate"> */}
+							{file.file}
+						</p>
 					</div>
 				)}
 			</div>
@@ -68,8 +66,11 @@ const FileViewerRow = ({
 			</div>
 			{/** file type */}
 			{!file.isDir && (
-				<div className={`${column}  overflow-hidden `}>
-					<p>{file.fileType.mime}</p>
+				<div className={`${column} flex-[0.3] overflow-hidden `}>
+					<p className="truncate">
+						{/* <p className="bg-yellow-300 max-w-[200px] truncate"> */}
+						{file.fileType.mime}
+					</p>
 				</div>
 			)}
 			{/** modified date */}
@@ -83,14 +84,10 @@ const FileViewerRow = ({
 			<div className={`${column}`}>
 				{!file.isDir && (
 					<div className="flex">
-						<a
-							href={previewURL}
-							target="_blank"
-							className="px-1"
-						>
+						<a href={previewURL} target="_blank" className="px-1">
 							<button className="bg-green-600 flex items-center py-1 px-2 hover:scale-105 shadow shadow-black rounded-sm">
 								<img
-									src="/public/icons/preview.svg"
+									src="/icons/preview.svg"
 									height={25}
 									width={25}
 									className=" "
@@ -98,18 +95,15 @@ const FileViewerRow = ({
 								<p className="text-white pl-1">Preview</p>
 							</button>
 						</a>
-						<a
-							href={downloadURL}
-							className="px-1"
-						>
+						<a href={downloadURL} className="px-1">
 							<button className="bg-green-600 flex items-center py-1 px-2 hover:scale-105 shadow shadow-black rounded-sm">
 								<img
-									src="/public/icons/download.svg"
+									src="/icons/download.svg"
 									height={25}
 									width={25}
 									className=" "
 								/>
-								<p className="text-white pl-1">Save</p>
+								<p className="text-white pl-1">Download</p>
 							</button>
 						</a>
 					</div>

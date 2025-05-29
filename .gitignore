@@ -1,8 +1,14 @@
 node_modules
 node_modules
 *.txt
-/client (copy)
+
+
+# inside the server directory
 /server/theFolder
 /server/serve.js
 /server/sample/
 /server/archive_sample/
+
+
+sample-files
+clientnext
