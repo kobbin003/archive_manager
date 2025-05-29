@@ -1,6 +1,7 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import { RecievedFileContext } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { SERVER_BASE_URL } from "../../utils/env";
 
 interface FileSelectorInputExtractProps {
 	action: "extract" | "compress";
@@ -38,7 +39,7 @@ const FileSelectorInputExtract: FC<FileSelectorInputExtractProps> = ({
 		if (storedSessionId) {
 			const options = { method: "DELETE" };
 			//* delete the previous sessionFolder in the server
-			fetch(`http://localhost:3000/resetSession/${storedSessionId}`, options)
+			fetch(`${SERVER_BASE_URL}/resetSession/${storedSessionId}`, options)
 				.then((res) => res.json())
 				.catch((err) => {
 					console.error(err);
@@ -62,14 +63,14 @@ const FileSelectorInputExtract: FC<FileSelectorInputExtractProps> = ({
 		};
 		if (selectedFile) {
 			fetch(
-				`http://localhost:3000/upload/extract?fileType=${typeSelected}`,
+				`${SERVER_BASE_URL}/upload/extract?fileType=${typeSelected}`,
 				uploadOptions
 			)
 				.then((res) => {
 					return res.json();
 				})
 				.then((result) => {
-					console.log("result", result);
+					// console.log("result", result);
 					if (result.data) {
 						setReceivedFile &&
 							setReceivedFile({

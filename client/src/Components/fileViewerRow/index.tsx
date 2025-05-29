@@ -1,6 +1,7 @@
 import { ExtractedFile } from "../uploader/types";
 import { dateFormatter } from "../../utils/dateformatter";
 import { Link } from "react-router-dom";
+import { SERVER_BASE_URL } from "../../utils/env";
 
 const FileViewerRow = ({
 	file,
@@ -13,8 +14,8 @@ const FileViewerRow = ({
 }) => {
 	//* use a's href instead of fetch for download.
 	const fileName = file.file;
-	const downloadURL = `http://localhost:3000/download/extract/${fileName}?sessionId=${sessionId}`;
-	const previewURL = `http://localhost:3000/preview/extract/${fileName}?sessionId=${sessionId}`;
+	const downloadURL = `${SERVER_BASE_URL}/download/extract/${fileName}?sessionId=${sessionId}`;
+	const previewURL = `${SERVER_BASE_URL}/preview/extract/${fileName}?sessionId=${sessionId}`;
 	const column = "text-left p-2 w-fit flex items-center  ";
 
 	return (

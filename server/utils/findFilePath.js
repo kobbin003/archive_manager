@@ -6,7 +6,7 @@ export const findFilePath = async (dirToStart, fileName) => {
 		for (const file of files) {
 			const filePath = path.join(dirToStart, file);
 			const stat = await fs.promises.stat(filePath);
-			console.log(`${file}`, file);
+			// console.log(`${file}`, file);
 			if (stat.isFile()) {
 				if (file === fileName) {
 					return filePath;

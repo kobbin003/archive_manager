@@ -1,4 +1,5 @@
 import { useOutletContext } from "react-router-dom";
+import { SERVER_BASE_URL } from "../../utils/env";
 interface CompressedFileType {
 	sessionId: string;
 	files: { file: string; uploadFileName: string; fileType: string };
@@ -8,7 +9,7 @@ const CompressedFileView = () => {
 	const context: CompressedFileType[] = useOutletContext();
 	const { files, sessionId, action } = context[0];
 
-	const downloadURL = `http://localhost:3000/download/compress/${files.fileType}?sessionId=${sessionId}`;
+	const downloadURL = `${SERVER_BASE_URL}/download/compress/${files.fileType}?sessionId=${sessionId}`;
 
 	return (
 		<div className="flex-col w-3/4">

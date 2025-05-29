@@ -8,6 +8,7 @@ import {
 } from "react";
 import { RecievedFileContext } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { SERVER_BASE_URL } from "../../utils/env";
 declare module "react" {
 	interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
 		// extends React's HTMLAttributes
@@ -55,7 +56,7 @@ const FileSelectorInputCompress: FC<FileSelectorInputCompressProps> = ({
 		if (storedSessionId) {
 			const options = { method: "DELETE" };
 			//* delete the previous sessionFolder in the server
-			fetch(`http://localhost:3000/resetSession/${storedSessionId}`, options)
+			fetch(`${SERVER_BASE_URL}/resetSession/${storedSessionId}`, options)
 				.then((res) => res.json())
 				.catch((err) => {
 					console.error(err);
@@ -101,7 +102,7 @@ const FileSelectorInputCompress: FC<FileSelectorInputCompressProps> = ({
 		};
 		if (selectedFile) {
 			fetch(
-				`http://localhost:3000/upload/compress?fileType=${typeSelected}&uploadType=${action}`,
+				`${SERVER_BASE_URL}/upload/compress?fileType=${typeSelected}&uploadType=${action}`,
 				uploadOptions
 			)
 				.then((res) => {

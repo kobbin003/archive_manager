@@ -3,6 +3,7 @@ import FileViewer from "../../Components/fileViewer";
 import { useEffect, useState } from "react";
 import { ReceivedFileNested } from "../../Components/uploader/types";
 import ErrorComponent from "../../Components/error";
+import { SERVER_BASE_URL } from "../../utils/env";
 
 const NestedFolderContent = () => {
 	const {
@@ -18,7 +19,7 @@ const NestedFolderContent = () => {
 		if (sessionId) {
 			setFolderContent("loading");
 			fetch(
-				`http://localhost:3000/readDirectory?directoryName=${directoryName}&sessionId=${sessionId}`
+				`${SERVER_BASE_URL}/readDirectory?directoryName=${directoryName}&sessionId=${sessionId}`
 			)
 				.then((res) => {
 					return res.json();

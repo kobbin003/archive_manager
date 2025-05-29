@@ -9,9 +9,20 @@ import { chooseExtractMethod } from "./utils/chooseExtractMethod.js";
 import formidable from "formidable";
 import { chooseCompressMethod } from "./utils/chooseCompressMethod.js";
 import { findFilePath } from "./utils/findFilePath.js";
+import "dotenv/config";
 
 const app = express();
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:3001"] }));
+
+app.use(
+	cors({
+		origin: [
+			"http://localhost:5173",
+			"http://localhost:3001",
+			"http://localhost:3000",
+			process.env.CLIENT_BASE_URL,
+		],
+	})
+);
 
 app.use(
 	session({
@@ -36,7 +47,7 @@ export const __dirname = path.dirname(__filename);
  * & extract the file's content in "extract" folder
  * & send the extracted files */
 app.post("/upload/extract", async (req, res) => {
-	console.log("session", req.session.id);
+	// console.log("session", req.session.id);
 	const fileType = req.query.fileType;
 
 	const sessionId = req.session.id;
@@ -346,12 +357,12 @@ app.post("/createFile", (req, res) => {
 	//* WAY - 1 [creates file from "data" event of req stream's "on" method]
 	let chunks = [];
 	req.on("data", (data) => {
-		console.log("data", data);
+		// console.log("data", data);
 		chunks.push(data);
 	});
 	req.on("end", () => {
 		const payload = Buffer.concat(chunks);
-		console.log("payload", payload);
+		// console.log("payload", payload);
 		fs.writeFileSync("frombufferrar.rar", payload);
 	});
 

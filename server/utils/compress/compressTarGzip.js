@@ -44,7 +44,7 @@ export const compressTarGz = (filePath, destinationPath, fileName) => {
 	//* we cannot use fs.readFile
 	//* Because "read below"
 	const filesToCompress = fs.readdirSync(filePathDir);
-	console.log(filesToCompress);
+	// console.log(filesToCompress);
 	tar
 		.c(
 			{

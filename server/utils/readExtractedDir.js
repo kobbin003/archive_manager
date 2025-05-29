@@ -13,7 +13,7 @@ export const readExtractedDir = async (dirPath, callback) => {
 	let items = [];
 	for (const file of files) {
 		let isDir = false;
-		console.log("file-length", file);
+		// console.log("file-length", file);
 		const filePath = path.join(dirPath, file);
 		const stat = fs.statSync(filePath);
 		const fileSize = stat.size;

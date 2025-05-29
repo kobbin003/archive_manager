@@ -10,6 +10,7 @@ import { ReceivedFileRoot } from "./Components/uploader/types";
 import Uploader from "./Components/uploader";
 import { Outlet } from "react-router-dom";
 import Header from "./Components/Header";
+import { SERVER_BASE_URL } from "./utils/env";
 
 export const RecievedFileContext = createContext<Dispatch<
 	SetStateAction<ReceivedFileRoot | "loading" | undefined>
@@ -27,7 +28,7 @@ function App() {
 			if (storedSessionId) {
 				const options = { method: "DELETE" };
 				/** delete the previous sessionFolder in the server */
-				fetch(`http://localhost:3000/resetSession/${storedSessionId}`, options)
+				fetch(`${SERVER_BASE_URL}/resetSession/${storedSessionId}`, options)
 					.then((res) => res.json())
 					.catch((err) => {
 						console.error(err);

@@ -6,7 +6,7 @@ export async function compressXZ(filePath, destinationPath, fileName) {
 		fs.mkdirSync(destinationPath, { recursive: true });
 	}
 	const fileToCompressBuffer = fs.readFileSync(filePath);
-	console.log(fileToCompressBuffer);
+	// console.log(fileToCompressBuffer);
 	return new Promise((resolve, reject) => {
 		lzma.compress(fileToCompressBuffer, 4, function (result, err) {
 			const compressedFilePath = path.join(destinationPath, `${fileName}.xz`);
