@@ -8,7 +8,9 @@ node_modules
 /server/serve.js
 /server/sample/
 /server/archive_sample/
+server/.env
 
+client/.env
 
 sample-files
 clientnext
